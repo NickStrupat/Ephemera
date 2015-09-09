@@ -10,7 +10,9 @@ namespace Ephemera {
 	public static class FmrnExtensions {
 		private static readonly ConditionalWeakTable<Object, ConcurrentDictionary<String, Object>> cwt = new ConditionalWeakTable<Object, ConcurrentDictionary<String, Object>>();
 
-		private static ConcurrentDictionary<String, Object> FmrnInternal(this Object @object) => cwt.GetValue(@object, key => new ConcurrentDictionary<String, Object>());
+		private static ConcurrentDictionary<String, Object> FmrnInternal(this Object @object) {
+			return cwt.GetValue(@object, key => new ConcurrentDictionary<String, Object>());
+		}
 
 		public static void Fmrn(this Object @object, String propertyName, Object value) {
 			if (@object == null)
@@ -35,11 +37,15 @@ namespace Ephemera {
 			return value;
 		}
 
-		public static dynamic Fmrn(this Object @object) => @object.Fmrn<ExpandoObject>();
+		public static dynamic Fmrn(this Object @object) {
+			return @object.Fmrn<ExpandoObject>();
+		}
 
 		private const String typeNamePrefix = "fmrnTypeName_";
 
-		public static void Fmrn<T>(this Object @object, T value) => @object.Fmrn(typeNamePrefix + typeof(T).FullName, value);
+		public static void Fmrn<T>(this Object @object, T value) {
+			@object.Fmrn(typeNamePrefix + typeof (T).FullName, value);
+		}
 
 		public static T Fmrn<T>(this Object @object) {
 			if (@object == null)
