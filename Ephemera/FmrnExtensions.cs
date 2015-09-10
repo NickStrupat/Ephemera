@@ -14,17 +14,6 @@ namespace Ephemera {
 			return cwt.GetValue(@object, key => new ConcurrentDictionary<String, Object>());
 		}
 
-		public static void Fmrn(this Object @object, String propertyName, Object value) {
-			if (@object == null)
-				throw new ArgumentNullException(nameof(@object));
-			if (propertyName == null)
-				throw new ArgumentNullException(nameof(propertyName));
-
-			var dict = @object.FmrnInternal();
-			lock (dict)
-				dict.AddOrUpdate(propertyName, value, (s, o) => value);
-		}
-
 		public static Object Fmrn(this Object @object, String propertyName) {
 			if (@object == null)
 				throw new ArgumentNullException(nameof(@object));
@@ -37,31 +26,38 @@ namespace Ephemera {
 			return value;
 		}
 
-		public static dynamic Fmrn(this Object @object) {
-			return @object.Fmrn<ExpandoObject>();
+		public static void Fmrn(this Object @object, String propertyName, Object value) {
+			if (@object == null)
+				throw new ArgumentNullException(nameof(@object));
+			if (propertyName == null)
+				throw new ArgumentNullException(nameof(propertyName));
+
+			@object.FmrnInternal().AddOrUpdate(propertyName, value, (s, o) => value);
 		}
 
-		private const String typeNamePrefix = "fmrnTypeName_";
-
-		public static void Fmrn<T>(this Object @object, T value) {
-			@object.Fmrn(typeNamePrefix + typeof (T).FullName, value);
+		private static class TypeKey<T> {
+			public static readonly String Name = "fmrnTypeName_" + typeof (T).FullName;
 		}
 
 		public static T Fmrn<T>(this Object @object) {
 			if (@object == null)
 				throw new ArgumentNullException(nameof(@object));
 
-			var dict = @object.FmrnInternal();
-			var key = typeNamePrefix + typeof (T).FullName;
-            Object value;
-			lock (dict)
-				value = dict.GetOrAdd(key, x => New<T>.Instance());
+			var value = @object.FmrnInternal().GetOrAdd(TypeKey<T>.Name, x => New<T>.Instance());
 			try {
-				return (T)value;
+                return (T)value;
 			}
 			catch (InvalidCastException ex) {
 				throw new InvalidOperationException($"Requested property of type {typeof(T).FullName} exists as type {value.GetType().FullName} and could not be cast.", ex);
 			}
+		}
+
+		public static void Fmrn<T>(this Object @object, T value) {
+			@object.Fmrn(TypeKey<T>.Name, value);
+		}
+
+		public static dynamic Fmrn(this Object @object) {
+			return @object.Fmrn<ExpandoObject>();
 		}
 	}
 }
