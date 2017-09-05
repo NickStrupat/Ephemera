@@ -8,7 +8,7 @@ This is accomplished with weak-references, implemented in the [ConditionalWeakTa
 
 | .NET support                                  | NuGet package                                                                                                                                              |
 |:----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| >= Framework 4.0 &#124;&#124; >= Standard 2.0 | [![NuGet Status](http://img.shields.io/nuget/v/Ephemera.svg?style=flat)](https://www.nuget.org/packages/Ephemera/) |
+| >= `Framework 4.0` &#124;&#124; >= `Standard 2.0` | [![NuGet Status](http://img.shields.io/nuget/v/Ephemera.svg?style=flat)](https://www.nuget.org/packages/Ephemera/) |
 
 ### Usage
 
